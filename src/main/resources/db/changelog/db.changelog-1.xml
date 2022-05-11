@@ -12,7 +12,6 @@
       </column>
       <column name="username" type="varchar"/>
       <column name="email" type="varchar"/>
-      <column name="password" type="varchar"/>
     </createTable>
   </changeSet>
 

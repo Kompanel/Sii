@@ -1,9 +1,12 @@
 package com.example.sii.event;
 
-import com.example.sii.user.UserLoginDTO;
+import com.example.sii.user.UserRegisterDTO;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +19,15 @@ public class EventController {
 
   private final EventService eventService;
 
-
   @GetMapping
-  private List<EventDetailsDTO> getAllEvents() {
+  public List<EventDetailsDTO> getAllEvents() {
     return eventService.getAllEventsForPublic();
   }
 
-  @PostMapping("myEvents")
-  private List<Event> getMyEvents(@RequestBody UserLoginDTO userLoginDTO) {
-    return eventService.getMyEvents(userLoginDTO);
+  @PostMapping("register/{eventId}")
+  public ResponseEntity<Event> registerToEvent(@PathVariable UUID eventId,
+      @RequestBody UserRegisterDTO user) {
+    return eventService.registerToEvent(eventId, user);
   }
-
 
 }

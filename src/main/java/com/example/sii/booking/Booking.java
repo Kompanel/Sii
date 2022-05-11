@@ -39,4 +39,8 @@ public class Booking {
   @JoinColumn(name = "event_id")
   private Event event;
 
+  public Booking(User user, Event event) {
+    this.user = user;
+    this.event = event;
+  }
 }

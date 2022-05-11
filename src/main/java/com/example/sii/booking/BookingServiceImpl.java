@@ -22,4 +22,15 @@ public class BookingServiceImpl implements BookingService {
   public List<Booking> getMyBookings(User user) {
     return bookingRepository.findAllByUser(user);
   }
+
+  @Override
+  public Booking saveBooking(Booking booking) {
+    return bookingRepository.save(booking);
+  }
+
+  @Override
+  public boolean doesHaveOtherLecture(int hour, User user) {
+
+    return bookingRepository.countBookingByUserAndHourOfEvent(hour, user) != 0;
+  }
 }

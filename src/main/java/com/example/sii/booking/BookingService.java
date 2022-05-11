@@ -9,4 +9,9 @@ public interface BookingService {
   int countOFParticipatesOfEvent(Event event);
 
   List<Booking> getMyBookings(User user);
+
+  Booking saveBooking(Booking booking);
+
+  boolean doesHaveOtherLecture(int hour, User user);
+
 }

@@ -23,7 +23,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @Table(name = "user", uniqueConstraints = {
     @UniqueConstraint(columnNames = "username"),
-    @UniqueConstraint(columnNames = "password"),
     @UniqueConstraint(columnNames = "email")
 })
 public class User {
@@ -41,10 +40,6 @@ public class User {
   @Size(max = 30)
   @Column(name = "username")
   private String username;
-  @NotBlank
-  @Size(max = 30)
-  @Column(name = "password")
-  private String password;
 
   @NotBlank
   @Size(max = 120)
@@ -54,10 +49,8 @@ public class User {
   @OneToMany(mappedBy = "user")
   private List<Booking> booking;
 
-
-  public User(String username, String password, String email) {
+  public User(String username, String email) {
     this.username = username;
-    this.password = password;
     this.email = email;
   }
 }
