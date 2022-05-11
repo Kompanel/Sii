@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+  <changeSet id="4" author="Aleksander Kalinowski">
+    <insert tableName="event">
+      <column name="id" value="0ef6f984-98da-412d-9e09-9e95418f154a"/>
+      <column name="room" value="1"/>
+      <column name="title" value="IoT"/>
+      <column name="hour" value="1"/>
+    </insert>
+    <insert tableName="event">
+      <column name="id" value="787f4276-40c6-4948-a980-0ff391793ddc"/>
+      <column name="room" value="2"/>
+      <column name="title" value="Frontend"/>
+      <column name="hour" value="1"/>
+    </insert>
+    <insert tableName="event">
+      <column name="id" value="db76972d-e7b3-41d6-941f-868781300a73"/>
+      <column name="room" value="3"/>
+      <column name="title" value="Backend"/>
+      <column name="hour" value="1"/>
+    </insert>
+
+    <insert tableName="event">
+      <column name="id" value="b5b33cf2-2284-4f0c-8cae-dda2a358f28d"/>
+      <column name="room" value="1"/>
+      <column name="title" value="IoT"/>
+      <column name="hour" value="2"/>
+    </insert>
+    <insert tableName="event">
+      <column name="id" value="d296d553-4488-47e2-9c0a-356c174d9e0f"/>
+      <column name="room" value="2"/>
+      <column name="title" value="Frontend"/>
+      <column name="hour" value="2"/>
+    </insert>
+    <insert tableName="event">
+      <column name="id" value="1e32e509-f1f5-46a7-8153-a744d1bc198b"/>
+      <column name="room" value="3"/>
+      <column name="title" value="Backend"/>
+      <column name="hour" value="2"/>
+    </insert>
+
+    <insert tableName="event">
+      <column name="id" value="dc7e1f1c-9dc7-4222-ade6-17d7f83e8014"/>
+      <column name="room" value="1"/>
+      <column name="title" value="IoT"/>
+      <column name="hour" value="3"/>
+    </insert>
+    <insert tableName="event">
+      <column name="id" value="89fa272f-f712-4038-9af9-0fa6f8dd9e97"/>
+      <column name="room" value="2"/>
+      <column name="title" value="Frontend"/>
+      <column name="hour" value="3"/>
+    </insert>
+    <insert tableName="event">
+      <column name="id" value="3361a122-8dae-4e7f-a046-c8b32078fbd2"/>
+      <column name="room" value="3"/>
+      <column name="title" value="Backend"/>
+      <column name="hour" value="3"/>
+    </insert>
+  </changeSet>
+
+</databaseChangeLog>
