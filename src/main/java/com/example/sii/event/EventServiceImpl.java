@@ -3,9 +3,12 @@ package com.example.sii.event;
 import com.example.sii.booking.Booking;
 import com.example.sii.booking.BookingService;
 import com.example.sii.constraint.Constraints;
+import com.example.sii.event.dto.EventDetailsDTO;
 import com.example.sii.user.User;
-import com.example.sii.user.UserRegisterDTO;
+import com.example.sii.user.dto.UserLoginDTO;
+import com.example.sii.user.dto.UserRegisterDTO;
 import com.example.sii.user.UserService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,6 +70,53 @@ public class EventServiceImpl implements EventService {
     bookingService.saveBooking(new Booking(user, event));
 
     return ResponseEntity.status(HttpStatus.OK).body(eventToEventDetailsDTO(event));
+  }
+
+  @Override
+  public ResponseEntity getMyEvents(UserLoginDTO userLoginDTO) {
+
+    Optional<User> optionalUser = userService.getUserByUsername(userLoginDTO.getLogin());
+
+    if(optionalUser.isEmpty())
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Username does not exists");
+
+    User user = optionalUser.get();
+
+    List<Booking> bookings = bookingService.getMyBookings(user);
+
+    List<Event> events = new ArrayList<>();
+
+    bookings.forEach(booking -> events.add(booking.getEvent()));
+
+    return ResponseEntity.status(HttpStatus.OK).body(events.stream().map(this::eventToEventDetailsDTO));
+  }
+
+  @Override
+  public List<Event> getAllEvents() {
+    return eventRepository.findAll();
+  }
+
+  @Override
+  @Transactional
+  public ResponseEntity<Object> resignFromEvent(UUID eventId, UserLoginDTO userLoginDTO) {
+
+    Optional<Event> optionalEvent = eventRepository.findById(eventId);
+
+    if (optionalEvent.isEmpty())
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event Not Found");
+
+    Optional<User> optionalUser = userService.getUserByUsername(userLoginDTO.getLogin());
+
+    if (optionalUser.isEmpty())
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
+
+    User user = optionalUser.get();
+    Event event = optionalEvent.get();
+
+    if(!bookingService.removeBookingByUserAndEvent(user, event))
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User never attended the event");
+
+    return ResponseEntity.ok("Success");
   }
 
   private EventDetailsDTO eventToEventDetailsDTO(Event event) {

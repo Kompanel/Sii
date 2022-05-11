@@ -1,4 +1,4 @@
-package com.example.sii.event;
+package com.example.sii.event.dto;
 
 import java.util.UUID;
 import lombok.Builder;

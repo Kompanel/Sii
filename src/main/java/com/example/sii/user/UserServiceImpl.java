@@ -1,9 +1,13 @@
 package com.example.sii.user;
 
+import com.example.sii.user.dto.UserChangingEmailDTO;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,6 +44,25 @@ public class UserServiceImpl implements UserService{
   @Override
   public Optional<User> getUserByUsername(String username) {
     return userRepository.findByUsername(username);
+  }
+
+  @Override
+  @Transactional
+  public ResponseEntity changeEmail(UserChangingEmailDTO userChangingEmailDTO) {
+    Optional<User> optionalUser = userRepository.findByUsername(userChangingEmailDTO.getUsername());
+
+    if (optionalUser.isEmpty())
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+
+    User user = optionalUser.get();
+
+    if (!user.getEmail().equals(userChangingEmailDTO.getPreviousEmail()))
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad email");
+
+    user.setEmail(userChangingEmailDTO.getNewEmail());
+    userRepository.save(user);
+
+    return ResponseEntity.status(HttpStatus.OK).body("Success");
   }
 
 }

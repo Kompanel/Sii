@@ -1,8 +1,10 @@
 package com.example.sii.user;
 
+import com.example.sii.user.dto.UserChangingEmailDTO;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
@@ -17,4 +19,6 @@ public interface UserService {
   User saveUser(User user);
 
   Optional<User> getUserByUsername(String username);
+
+  ResponseEntity<User> changeEmail(UserChangingEmailDTO userChangingEmailDTO);
 }

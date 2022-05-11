@@ -1,4 +1,4 @@
-package com.example.sii.user;
+package com.example.sii.user.dto;
 
 import lombok.Getter;
 import lombok.Setter;

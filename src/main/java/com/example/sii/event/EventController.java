@@ -1,10 +1,13 @@
 package com.example.sii.event;
 
-import com.example.sii.user.UserRegisterDTO;
+import com.example.sii.event.dto.EventDetailsDTO;
+import com.example.sii.user.dto.UserLoginDTO;
+import com.example.sii.user.dto.UserRegisterDTO;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +31,16 @@ public class EventController {
   public ResponseEntity<Event> registerToEvent(@PathVariable UUID eventId,
       @RequestBody UserRegisterDTO user) {
     return eventService.registerToEvent(eventId, user);
+  }
+
+  @PostMapping("myEvents")
+  public ResponseEntity<List<Event>> getMyEvents(@RequestBody UserLoginDTO userLoginDTO) {
+    return eventService.getMyEvents(userLoginDTO);
+  }
+
+  @DeleteMapping("{eventId}")
+  public ResponseEntity<Object> resignFromEvent(@PathVariable UUID eventId, UserLoginDTO userLoginDTO) {
+    return eventService.resignFromEvent(eventId, userLoginDTO);
   }
 
 }

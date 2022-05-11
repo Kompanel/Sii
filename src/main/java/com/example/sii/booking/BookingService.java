@@ -14,4 +14,7 @@ public interface BookingService {
 
   boolean doesHaveOtherLecture(int hour, User user);
 
+  List<Booking> getAllBookings();
+
+  boolean removeBookingByUserAndEvent(User user, Event event);
 }

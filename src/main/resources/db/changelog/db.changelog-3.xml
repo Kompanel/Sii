@@ -10,7 +10,6 @@
       <column name="id" type="uuid">
         <constraints primaryKey="true" nullable="false"/>
       </column>
-      <column name="start_time" type="time"/>
       <column name="user_id" type="uuid"/>
       <column name="event_id" type="uuid"/>
     </createTable>
