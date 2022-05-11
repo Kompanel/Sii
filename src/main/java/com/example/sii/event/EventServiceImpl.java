@@ -3,11 +3,12 @@ package com.example.sii.event;
 import com.example.sii.booking.Booking;
 import com.example.sii.booking.BookingService;
 import com.example.sii.constraint.Constraints;
+import com.example.sii.email.EmailService;
 import com.example.sii.event.dto.EventDetailsDTO;
 import com.example.sii.user.User;
+import com.example.sii.user.UserService;
 import com.example.sii.user.dto.UserLoginDTO;
 import com.example.sii.user.dto.UserRegisterDTO;
-import com.example.sii.user.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,8 @@ public class EventServiceImpl implements EventService {
 
   private final BookingService bookingService;
 
+  private final EmailService emailService;
+
   @Override
   public List<EventDetailsDTO> getAllEventsForPublic() {
 
@@ -45,13 +48,15 @@ public class EventServiceImpl implements EventService {
 
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
 
-    if (optionalEvent.isEmpty())
+    if (optionalEvent.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event does not exists");
+    }
 
     Event event = optionalEvent.get();
 
-    if (bookingService.countOFParticipatesOfEvent(event) >= 5)
+    if (bookingService.countOFParticipatesOfEvent(event) >= 5) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Room full");
+    }
 
     Optional<User> optionalUser = userService.getUserByUsername(userRegisterDTO.getUsername());
 
@@ -59,15 +64,24 @@ public class EventServiceImpl implements EventService {
 
     if (optionalUser.isPresent()) {
       user = optionalUser.get();
-      if (!userRegisterDTO.getEmail().equals(user.getEmail()))
+      if (!userRegisterDTO.getEmail().equals(user.getEmail())) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already taken");
-    } else
-      user = userService.saveUser(new User(userRegisterDTO.getUsername(), userRegisterDTO.getEmail()));
+      }
+    } else {
+      user = userService.saveUser(
+          new User(userRegisterDTO.getUsername(), userRegisterDTO.getEmail()));
+    }
 
-    if (bookingService.doesHaveOtherLecture(event.getHour(), user))
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already registered in this or another lecture in this hour");
+    if (bookingService.doesHaveOtherLecture(event.getHour(), user)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("User already registered in this or another lecture in this hour");
+    }
 
     bookingService.saveBooking(new Booking(user, event));
+
+    emailService.sendConfirmationEmail(userRegisterDTO,
+        EventDetailsDTO.builder().title(event.getTitle())
+            .hours(Constraints.hours.get(event.getHour())).room(event.getRoom()).build());
 
     return ResponseEntity.status(HttpStatus.OK).body(eventToEventDetailsDTO(event));
   }
@@ -77,8 +91,9 @@ public class EventServiceImpl implements EventService {
 
     Optional<User> optionalUser = userService.getUserByUsername(userLoginDTO.getLogin());
 
-    if(optionalUser.isEmpty())
+    if (optionalUser.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Username does not exists");
+    }
 
     User user = optionalUser.get();
 
@@ -88,7 +103,8 @@ public class EventServiceImpl implements EventService {
 
     bookings.forEach(booking -> events.add(booking.getEvent()));
 
-    return ResponseEntity.status(HttpStatus.OK).body(events.stream().map(this::eventToEventDetailsDTO));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(events.stream().map(this::eventToEventDetailsDTO));
   }
 
   @Override
@@ -102,19 +118,22 @@ public class EventServiceImpl implements EventService {
 
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
 
-    if (optionalEvent.isEmpty())
+    if (optionalEvent.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event Not Found");
+    }
 
     Optional<User> optionalUser = userService.getUserByUsername(userLoginDTO.getLogin());
 
-    if (optionalUser.isEmpty())
+    if (optionalUser.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
+    }
 
     User user = optionalUser.get();
     Event event = optionalEvent.get();
 
-    if(!bookingService.removeBookingByUserAndEvent(user, event))
+    if (!bookingService.removeBookingByUserAndEvent(user, event)) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User never attended the event");
+    }
 
     return ResponseEntity.ok("Success");
   }

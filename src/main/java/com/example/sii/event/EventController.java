@@ -3,6 +3,7 @@ package com.example.sii.event;
 import com.example.sii.event.dto.EventDetailsDTO;
 import com.example.sii.user.dto.UserLoginDTO;
 import com.example.sii.user.dto.UserRegisterDTO;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class EventController {
 
   @PostMapping("register/{eventId}")
   public ResponseEntity<Event> registerToEvent(@PathVariable UUID eventId,
-      @RequestBody UserRegisterDTO user) {
+      @RequestBody UserRegisterDTO user) throws IOException {
     return eventService.registerToEvent(eventId, user);
   }
 

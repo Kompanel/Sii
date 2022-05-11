@@ -1,9 +1,10 @@
 package com.example.sii.user;
 
 import com.example.sii.user.dto.UserChangingEmailDTO;
+import com.example.sii.user.dto.UserRegisterDTO;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,21 +23,6 @@ public class UserServiceImpl implements UserService{
   }
 
   @Override
-  public Optional<User> getUser(UUID id) {
-    return userRepository.findById(id);
-  }
-
-  @Override
-  public Boolean existByEmail(String email) {
-    return userRepository.existsByEmail(email);
-  }
-
-  @Override
-  public Boolean existByUsername(String username) {
-    return userRepository.existsByUsername(username);
-  }
-
-  @Override
   public User saveUser(User user) {
     return userRepository.save(user);
   }
@@ -48,7 +34,7 @@ public class UserServiceImpl implements UserService{
 
   @Override
   @Transactional
-  public ResponseEntity changeEmail(UserChangingEmailDTO userChangingEmailDTO) {
+  public ResponseEntity<Object> changeEmail(UserChangingEmailDTO userChangingEmailDTO) {
     Optional<User> optionalUser = userRepository.findByUsername(userChangingEmailDTO.getUsername());
 
     if (optionalUser.isEmpty())
@@ -63,6 +49,20 @@ public class UserServiceImpl implements UserService{
     userRepository.save(user);
 
     return ResponseEntity.status(HttpStatus.OK).body("Success");
+  }
+
+  @Override
+  public List<UserRegisterDTO> getAllRegisteredUsers() {
+    return getAllUsers().stream()
+        .map(this::userToUserRegisterDTO)
+        .collect(Collectors.toList());
+  }
+
+  private UserRegisterDTO userToUserRegisterDTO(User user) {
+    return UserRegisterDTO.builder()
+        .username(user.getUsername())
+        .email(user.getEmail())
+        .build();
   }
 
 }
