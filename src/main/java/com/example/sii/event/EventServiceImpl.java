@@ -5,6 +5,8 @@ import com.example.sii.booking.BookingService;
 import com.example.sii.constraint.Constraints;
 import com.example.sii.email.EmailService;
 import com.example.sii.event.dto.EventDetailsDTO;
+import com.example.sii.event.dto.EventInterest;
+import com.example.sii.event.dto.SubjectInterest;
 import com.example.sii.user.User;
 import com.example.sii.user.UserService;
 import com.example.sii.user.dto.UserLoginDTO;
@@ -54,7 +56,7 @@ public class EventServiceImpl implements EventService {
 
     Event event = optionalEvent.get();
 
-    if (bookingService.countOFParticipatesOfEvent(event) >= 5) {
+    if (bookingService.countOFParticipatesOfEvent(event) >= Constraints.LIMIT_OF_PARTICIPATES) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Room full");
     }
 
@@ -81,7 +83,7 @@ public class EventServiceImpl implements EventService {
 
     emailService.sendConfirmationEmail(userRegisterDTO,
         EventDetailsDTO.builder().title(event.getTitle())
-            .hours(Constraints.hours.get(event.getHour())).room(event.getRoom()).build());
+            .hours(Constraints.HOURS.get(event.getHour())).room(event.getRoom()).build());
 
     return ResponseEntity.status(HttpStatus.OK).body(eventToEventDetailsDTO(event));
   }
@@ -138,14 +140,64 @@ public class EventServiceImpl implements EventService {
     return ResponseEntity.ok("Success");
   }
 
+  @Override
+  public List<EventInterest> getLectureInterest() {
+
+    List<Event> events = getAllEvents();
+
+    return events.stream()
+        .map(this::eventToEventInterest)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<SubjectInterest> getSubjectInterest() {
+
+    List<String> listOfSubjects = eventRepository.getListOfSubjects();
+
+    List<SubjectInterest> subjectInterests = new ArrayList<>();
+
+    listOfSubjects.forEach(subject -> {
+      List<Event> listOfSubjectEvent = eventRepository.findAllByTitle(subject);
+
+      int participates = 0;
+
+      for(Event event: listOfSubjectEvent) {
+        participates += bookingService.countOFParticipatesOfEvent(event);
+      }
+
+      subjectInterests.add(SubjectInterest.builder()
+          .subject(subject)
+          .percentOfInterest(String.valueOf(
+              (participates * 100)
+                  / (Constraints.LIMIT_OF_PARTICIPATES * listOfSubjectEvent.size())
+              )).build());
+
+    });
+
+    return subjectInterests;
+  }
+
   private EventDetailsDTO eventToEventDetailsDTO(Event event) {
     return EventDetailsDTO.builder()
         .id(event.getId())
         .title(event.getTitle())
         .room(event.getRoom())
-        .hours(Constraints.hours.get(event.getHour()))
+        .hours(Constraints.HOURS.get(event.getHour()))
         .participates(bookingService.countOFParticipatesOfEvent(event))
         .build();
+  }
+
+  private EventInterest eventToEventInterest(Event event) {
+    return EventInterest.builder()
+        .subject(event.getTitle())
+        .hour(Constraints.HOURS.get(event.getHour()))
+        .percentOfInterest(
+            String.valueOf(
+                (bookingService.countOFParticipatesOfEvent(event) * 100)
+                    / Constraints.LIMIT_OF_PARTICIPATES
+            )
+        ).build();
   }
 
 }

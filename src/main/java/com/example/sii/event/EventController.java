@@ -1,6 +1,8 @@
 package com.example.sii.event;
 
 import com.example.sii.event.dto.EventDetailsDTO;
+import com.example.sii.event.dto.EventInterest;
+import com.example.sii.event.dto.SubjectInterest;
 import com.example.sii.user.dto.UserLoginDTO;
 import com.example.sii.user.dto.UserRegisterDTO;
 import java.io.IOException;
@@ -42,6 +44,16 @@ public class EventController {
   @DeleteMapping("{eventId}")
   public ResponseEntity<Object> resignFromEvent(@PathVariable UUID eventId, UserLoginDTO userLoginDTO) {
     return eventService.resignFromEvent(eventId, userLoginDTO);
+  }
+
+  @GetMapping("lectureInterest")
+  public List<EventInterest> getLectureInterest() {
+    return eventService.getLectureInterest();
+  }
+
+  @GetMapping("subjectInterest")
+  public List<SubjectInterest> getSubjectInterest() {
+    return eventService.getSubjectInterest();
   }
 
 }

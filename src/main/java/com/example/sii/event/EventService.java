@@ -1,6 +1,8 @@
 package com.example.sii.event;
 
 import com.example.sii.event.dto.EventDetailsDTO;
+import com.example.sii.event.dto.EventInterest;
+import com.example.sii.event.dto.SubjectInterest;
 import com.example.sii.user.dto.UserLoginDTO;
 import com.example.sii.user.dto.UserRegisterDTO;
 import java.io.IOException;
@@ -19,4 +21,8 @@ public interface EventService {
   List<Event> getAllEvents();
 
   ResponseEntity<Object> resignFromEvent(UUID eventId, UserLoginDTO userLoginDTO);
+
+  List<EventInterest> getLectureInterest();
+
+  List<SubjectInterest> getSubjectInterest();
 }
