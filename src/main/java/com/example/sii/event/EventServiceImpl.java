@@ -145,8 +145,10 @@ public class EventServiceImpl implements EventService {
 
     List<Event> events = getAllEvents();
 
+    int numberOfPeople = bookingService.getAllBookings().size();
+
     return events.stream()
-        .map(this::eventToEventInterest)
+        .map(event -> eventToEventInterest(event, numberOfPeople==0? 1: numberOfPeople))
         .collect(Collectors.toList());
   }
 
@@ -156,6 +158,7 @@ public class EventServiceImpl implements EventService {
     List<String> listOfSubjects = eventRepository.getListOfSubjects();
 
     List<SubjectInterest> subjectInterests = new ArrayList<>();
+    int numberOfPeople = bookingService.getAllBookings().size();
 
     listOfSubjects.forEach(subject -> {
       List<Event> listOfSubjectEvent = eventRepository.findAllByTitle(subject);
@@ -170,7 +173,7 @@ public class EventServiceImpl implements EventService {
           .subject(subject)
           .percentOfInterest(String.valueOf(
               (participates * 100)
-                  / (Constraints.LIMIT_OF_PARTICIPATES * listOfSubjectEvent.size())
+                  / (numberOfPeople==0? 1: numberOfPeople)
               )).build());
 
     });
@@ -188,14 +191,14 @@ public class EventServiceImpl implements EventService {
         .build();
   }
 
-  private EventInterest eventToEventInterest(Event event) {
+  private EventInterest eventToEventInterest(Event event, int numberOfPeople) {
     return EventInterest.builder()
         .subject(event.getTitle())
         .hour(Constraints.HOURS.get(event.getHour()))
         .percentOfInterest(
             String.valueOf(
                 (bookingService.countOFParticipatesOfEvent(event) * 100)
-                    / Constraints.LIMIT_OF_PARTICIPATES
+                    / numberOfPeople
             )
         ).build();
   }
