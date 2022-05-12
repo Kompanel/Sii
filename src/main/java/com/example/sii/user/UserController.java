@@ -2,6 +2,7 @@ package com.example.sii.user;
 
 import com.example.sii.user.dto.UserChangingEmailDTO;
 import com.example.sii.user.dto.UserRegisterDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,13 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("changeEmail")
+  @Operation(summary = "change email")
   ResponseEntity<Object> changeEmail(@RequestBody UserChangingEmailDTO userChangingEmailDTO) {
     return userService.changeEmail(userChangingEmailDTO);
   }
 
   @GetMapping("registeredUsers")
+  @Operation(summary = "get all registered users")
   List<UserRegisterDTO> getAllUsers(){
     return userService.getAllRegisteredUsers();
   }
